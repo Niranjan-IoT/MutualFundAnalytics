@@ -1,9 +1,12 @@
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
+# Create database connection
 engine = create_engine(
     "sqlite:///data/database/mutual_fund.db"
 )
+
+# Load tables
 
 pd.read_csv(
     "data/raw/01_fund_master.csv"
@@ -51,3 +54,27 @@ pd.read_csv(
 )
 
 print("All Tables Loaded")
+
+# Validation
+
+print("\n===== ROW COUNT VALIDATION =====")
+
+with engine.connect() as conn:
+
+    tables = [
+        "dim_fund",
+        "fact_nav",
+        "fact_transactions",
+        "fact_performance",
+        "fact_aum"
+    ]
+
+    for table in tables:
+
+        count = conn.execute(
+            text(f"SELECT COUNT(*) FROM {table}")
+        ).scalar()
+
+        print(f"{table}: {count}")
+
+        
